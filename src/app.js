@@ -7,6 +7,8 @@ const hbs = require('hbs')
 const Register = require("./models/register")
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
+const auth = require("../src/middleware/auth")
 
 
 const port  = process.env.PORT || 8000
@@ -22,6 +24,7 @@ const partials_path =path.join(__dirname, '../templets/partials')
 app.use(express.json());
 app.use(express.urlencoded({extended:false})); ///whatever data is presnt on form section we will get 
 app.use(express.static('public'))  ;
+app.use(cookieParser())
 // if you have static html page in public folder it will show 
 
 
@@ -31,12 +34,13 @@ app.set("views",templets_path)
 hbs.registerPartials(partials_path) 
 
 app.get("/",(req,res)=>{
-res.render("index") // render means showing the page
+res.render("home") // render means showing the page
 })
 
 app.get("/register",(req,res)=>{
 res.render("register")
 });
+
 
 // create new user in database
 app.post("/register",async(req,res)=>{
@@ -55,10 +59,15 @@ const user = new Register({
 // middleware 
 const token = await user.generateAuthToken()
 
+res.cookie('jwt',token),{
+    expires : new Date(Date.now() + 30000),
+    httpOnly:true
+};
+
 
 
 const create_user =  await user.save();
-     res.render("index");
+    res.render("index");
 
 }
 else{
@@ -86,6 +95,15 @@ try {
 
    const isMatch = await bcrypt.compare(password,user_email.password)
    const token = await user_email.generateAuthToken(); 
+
+   res.cookie('jwt',token),{
+    expires : new Date(Date.now() + 50000),
+    httpOnly:true
+    // secure:true
+};
+
+console.log(req.cookies.jwt)
+
    if(isMatch){
     res.render("index");
    }
@@ -100,6 +118,27 @@ try {
 }
 })
 
+
+app.get("/logout", auth ,async(req,res)=>{
+    // res.user.tokens =req.user.tokens.filter((currentEl=>{
+    //     return currentEl.token != req.token
+    // }))
+req.user.tokens=[]
+
+  res.clearCookie("jwt");
+  await req.user.save();
+  res.render("login")
+    })
+
+
+app.get("/secret", auth ,(req,res)=>{
+    res.render("secret") // render means showing the page) {
+    })
+
+app.get("*",(req,res)=>{
+    res.render("error")
+    });
+    
 app.listen(port ,()=>{
 console.log(`listening on port: ${port}`)
 })
