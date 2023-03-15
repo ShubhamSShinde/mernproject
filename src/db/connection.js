@@ -1,9 +1,10 @@
 const mongoose = require("mongoose")
 const mongoDB ='mongodb://127.0.0.1:27017/Registration'
+const DB ="mongodb+srv://shubham6678:9jLD5tzSsy2G4hHa@cluster0.dmg8bej.mongodb.net/mernstack?retryWrites=true&w=majority"
 
 // const URI = process.env.MONGODB_URL;
 
-mongoose.connect(mongoDB, {
+mongoose.connect(DB, {
 //    useCreateIndex: true, 
 //    useFindAndModify: false, 
 //    useNewUrlParser: true, 
