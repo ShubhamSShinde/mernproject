@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 const mongoDB ='mongodb://127.0.0.1:27017/Registration'
-const DB ="mongodb+srv://shubham6678:9jLD5tzSsy2G4hHa@cluster0.dmg8bej.mongodb.net/mernstack?retryWrites=true&w=majority"
+const DB =`mongodb+srv://shubham6678:${process.env.PASSWORD}@cluster0.dmg8bej.mongodb.net/mernstack?retryWrites=true&w=majority`
 
 // const URI = process.env.MONGODB_URL;
 
